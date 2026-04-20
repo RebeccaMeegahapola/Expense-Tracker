@@ -2,7 +2,11 @@ export const COLORS = {
     primary: '#5BB8F5',
     primaryDark: '#2E99E0',
     primaryLight: '#C2E4FB',
+    blueShadeOne: '#4A90E2',
+    blueShadeTwo: '#78abcd',
+    background: '#c7e9fa',
     primaryBg: '#EBF6FE',
+    dark: '#000000',
 
     income: '#1D9E75',
     expense: '#D85A30',
