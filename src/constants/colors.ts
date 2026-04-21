@@ -8,7 +8,7 @@ export const COLORS = {
     primaryBg: '#EBF6FE',
     dark: '#000000',
 
-    income: '#1D9E75',
+    income: '#149ffb',
     expense: '#D85A30',
 
     white: '#FFFFFF',
