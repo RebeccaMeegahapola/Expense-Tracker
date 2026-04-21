@@ -54,7 +54,7 @@ const BottomTabNavigator = () => {
             <Tab.Screen
                 name="Home"
                 component={HomeScreen}
-                options={{ headerShown: true }}
+                options={{ headerShown: false }}
             />
             <Tab.Screen
                 name="Statistics"
