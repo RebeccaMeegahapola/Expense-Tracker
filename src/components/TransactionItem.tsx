@@ -38,7 +38,7 @@ const TransactionItem: React.FC<TransactionItemProps> = ({
             <View style={styles.leftSection}>
                 <View style={[
                     styles.iconContainer,
-                    { backgroundColor: isIncome ? '#E8F8E8' : '#FFF0F0' }
+
                 ]}>
                     <Text style={styles.iconText}>{icon}</Text>
                 </View>
@@ -61,9 +61,10 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        paddingVertical: 14,
-        borderBottomWidth: 1,
-        borderBottomColor: '#F0F0F0',
+        padding: 14,
+        borderRadius: 12,
+        backgroundColor: COLORS.white,
+        marginBottom: 12,
     },
     leftSection: {
         flexDirection: 'row',
@@ -71,15 +72,12 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     iconContainer: {
-        width: 48,
-        height: 48,
-        borderRadius: 16,
         justifyContent: 'center',
         alignItems: 'center',
         marginRight: 14,
     },
     iconText: {
-        fontSize: 22,
+        fontSize: 20,
     },
     detailsContainer: {
         flex: 1,
