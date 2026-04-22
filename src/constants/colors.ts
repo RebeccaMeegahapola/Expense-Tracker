@@ -6,6 +6,7 @@ export const COLORS = {
     blueShadeTwo: '#78abcd',
     background: '#c7e9fa',
     primaryBg: '#EBF6FE',
+    lightBg: '#F4F9FF',
     dark: '#000000',
 
     income: '#149ffb',
