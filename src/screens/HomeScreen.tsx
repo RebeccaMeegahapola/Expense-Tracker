@@ -72,6 +72,11 @@ const HomeScreen = () => {
                 contentContainerStyle={styles.scrollContent}
             >
                 <View style={styles.curvedHeader}>
+                    <View style={styles.circle1} />
+                    <View style={styles.circle2} />
+                    <View style={styles.circle3} />
+                    <View style={styles.circle4} />
+
                     <View style={styles.greetingContainer}>
                         <Text style={styles.greeting}>Good afternoon,</Text>
                         <Text style={styles.userName}>{userData.name}</Text>
@@ -113,7 +118,7 @@ const HomeScreen = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: COLORS.background,
+        backgroundColor: COLORS.lightBg,
     },
     scrollContent: {
         paddingBottom: 30,
@@ -124,6 +129,44 @@ const styles = StyleSheet.create({
         height: 250,
         borderBottomLeftRadius: 30,
         borderBottomRightRadius: 30,
+        overflow: 'hidden',
+        position: 'relative',
+    },
+    circle1: {
+        position: 'absolute',
+        width: 300,
+        height: 300,
+        borderRadius: 150,
+        backgroundColor: 'rgba(255, 255, 255, 0.08)',
+        top: -120,
+        right: -80,
+    },
+    circle2: {
+        position: 'absolute',
+        width: 200,
+        height: 200,
+        borderRadius: 100,
+        backgroundColor: 'rgba(255, 255, 255, 0.06)',
+        bottom: -50,
+        left: -60,
+    },
+    circle3: {
+        position: 'absolute',
+        width: 150,
+        height: 150,
+        borderRadius: 75,
+        backgroundColor: 'rgba(255, 255, 255, 0.1)',
+        top: 50,
+        left: 20,
+    },
+    circle4: {
+        position: 'absolute',
+        width: 100,
+        height: 100,
+        borderRadius: 50,
+        backgroundColor: 'rgba(255, 255, 255, 0.05)',
+        bottom: 20,
+        right: 40,
     },
     greetingContainer: {
         paddingHorizontal: 20,
