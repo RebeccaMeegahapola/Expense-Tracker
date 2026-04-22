@@ -65,7 +65,7 @@ const BottomTabNavigator = () => {
                 name="Add"
                 component={AddExpenseScreen}
                 options={{
-                    headerShown: true,
+                    headerShown: false,
                     headerTitle: 'Add Expense',
                     tabBarIcon: () => (
                         <View style={styles.addButton}>
@@ -78,7 +78,7 @@ const BottomTabNavigator = () => {
                 name="Transactions"
                 component={TransactionsScreen}
                 options={{
-                    headerShown: true,
+                    headerShown: false,
                     headerTitle: 'Transactions'
                 }}
             />
@@ -86,7 +86,7 @@ const BottomTabNavigator = () => {
                 name="Profile"
                 component={ProfileScreen}
                 options={{
-                    headerShown: true,
+                    headerShown: false,
                     headerTitle: 'Profile'
                 }}
             />
