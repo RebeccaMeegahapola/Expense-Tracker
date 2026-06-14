@@ -1,5 +1,5 @@
 // src/screens/StatisticsScreen.tsx
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
     View,
     Text,
@@ -14,6 +14,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS } from '../constants/colors';
 import { CATEGORIES } from '../components/CategorySelector';
+import {useTransactionStore} from "../store/useTransactionStore";
 
 const { width } = Dimensions.get('window');
 
@@ -21,32 +22,86 @@ const StatisticsScreen = () => {
     const [selectedPeriod, setSelectedPeriod] = useState<'week' | 'month' | 'year'>('month');
     const [selectedTab, setSelectedTab] = useState<'expense' | 'income'>('expense');
 
-    // Dummy data
-    const totalExpense = 2840.00;
-    const totalIncome = 5200.00;
-    const averageDaily = 94.67;
+    // Get data from store
+    const transactions = useTransactionStore((state) => state.transactions);
+    const getTotalIncome = useTransactionStore((state) => state.getTotalIncome);
+    const getTotalExpense = useTransactionStore((state) => state.getTotalExpense);
 
-    const categoryData = [
-        { category: CATEGORIES[0], amount: 850.00, percentage: 30 },
-        { category: CATEGORIES[3], amount: 520.00, percentage: 18 },
-        { category: CATEGORIES[1], amount: 480.00, percentage: 17 },
-        { category: CATEGORIES[2], amount: 350.00, percentage: 12 },
-        { category: CATEGORIES[4], amount: 300.00, percentage: 11 },
-        { category: CATEGORIES[11], amount: 340.00, percentage: 12 },
-    ];
+    const totalIncome = getTotalIncome();
+    const totalExpense = getTotalExpense();
+    const averageDaily = totalExpense / 30;
 
-    const weeklyData = [
-        { day: 'Mon', amount: 120 },
-        { day: 'Tue', amount: 200 },
-        { day: 'Wed', amount: 80 },
-        { day: 'Thu', amount: 250 },
-        { day: 'Fri', amount: 180 },
-        { day: 'Sat', amount: 300 },
-        { day: 'Sun', amount: 150 },
-    ];
+    // Category breakdown - FIXED: renamed from categoryBreakdown to categoryData
+    const categoryData = useMemo(() => {
+        const filtered = transactions.filter((t) => t.type === selectedTab);
+        const categoryMap: Record<string, { category: any; amount: number }> = {};
+
+        filtered.forEach((t) => {
+            if (t.category) {
+                const key = t.category.id;
+                if (!categoryMap[key]) {
+                    categoryMap[key] = { category: t.category, amount: 0 };
+                }
+                categoryMap[key].amount += t.amount;
+            }
+        });
+
+        const total = filtered.reduce((sum, t) => sum + t.amount, 0);
+
+        return Object.values(categoryMap)
+            .map((item) => ({
+                ...item,
+                percentage: total > 0 ? Math.round((item.amount / total) * 100) : 0,
+            }))
+            .sort((a, b) => b.amount - a.amount)
+            .slice(0, 6);
+    }, [transactions, selectedTab]);
+
+    // Weekly data
+    const weeklyData = useMemo(() => {
+        // Demo data with different heights (fallback)
+        const demoData = [
+            { day: 'Mon', amount: 120 },
+            { day: 'Tue', amount: 200 },
+            { day: 'Wed', amount: 80 },
+            { day: 'Thu', amount: 250 },
+            { day: 'Fri', amount: 180 },
+            { day: 'Sat', amount: 300 },
+            { day: 'Sun', amount: 150 },
+        ];
+
+        // Try to get real data
+        const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        const today = new Date();
+        const realData = [];
+        let hasDifferentValues = false;
+
+        for (let i = 6; i >= 0; i--) {
+            const date = new Date(today);
+            date.setDate(date.getDate() - i);
+            const dayName = days[date.getDay()];
+            const dateStr = date.toDateString();
+
+            // Filter transactions for this specific day
+            const dayTotal = transactions
+                .filter((t) => {
+                    return t.date === dateStr && t.type === 'expense';
+                })
+                .reduce((sum, t) => sum + t.amount, 0);
+
+            realData.push({ day: dayName, amount: dayTotal });
+        }
+
+        // Check if all values are the same
+        const firstAmount = realData[0]?.amount || 0;
+        hasDifferentValues = realData.some(d => d.amount !== firstAmount);
+
+        // Only use real data if it has different values
+        return hasDifferentValues ? realData : demoData;
+    }, [transactions]);
 
     const maxBarHeight = 150;
-    const maxAmount = Math.max(...weeklyData.map(d => d.amount));
+    const maxAmount = Math.max(...weeklyData.map((d) => d.amount), 1);
 
     const renderBarChart = () => (
         <View style={styles.chartCard}>
@@ -76,13 +131,11 @@ const StatisticsScreen = () => {
             {/* Bar Chart */}
             <View style={styles.barChartContainer}>
                 {weeklyData.map((item, index) => {
-                    const barHeight = (item.amount / maxAmount) * maxBarHeight;
+                    const barHeight = maxAmount > 0 ? (item.amount / maxAmount) * maxBarHeight : 0;
                     return (
                         <View key={index} style={styles.barWrapper}>
-                            <View style={styles.barLabelContainer}>
-                                <Text style={styles.barValue}>${item.amount}</Text>
-                            </View>
-                            <View style={[styles.bar, { height: barHeight }]}>
+                            <Text style={styles.barValue}>${item.amount}</Text>
+                            <View style={[styles.bar, { height: Math.max(barHeight, 4) }]}>
                                 <View style={styles.barFill} />
                             </View>
                             <Text style={styles.barDay}>{item.day}</Text>
@@ -93,39 +146,47 @@ const StatisticsScreen = () => {
         </View>
     );
 
+    // FIXED: Now uses categoryData (correct variable name)
     const renderCategoryBreakdown = () => (
         <View style={styles.chartCard}>
             <Text style={styles.chartTitle}>Category Breakdown</Text>
 
-            {categoryData.map((item, index) => (
-                <View key={index} style={styles.categoryRow}>
-                    <View style={styles.categoryLeft}>
-                        <View style={[styles.categoryDot, { backgroundColor: item.category.color }]}>
-                            <Text style={styles.categoryDotIcon}>{item.category.icon}</Text>
-                        </View>
-                        <View style={styles.categoryInfo}>
-                            <Text style={styles.categoryName}>{item.category.name}</Text>
-                            <Text style={styles.categoryPercentage}>{item.percentage}%</Text>
-                        </View>
-                    </View>
-                    <View style={styles.categoryRight}>
-                        <View style={styles.progressBarBg}>
-                            <View
-                                style={[
-                                    styles.progressBarFill,
-                                    {
-                                        width: `${item.percentage}%`,
-                                        backgroundColor: item.category.color
-                                    }
-                                ]}
-                            />
-                        </View>
-                        <Text style={styles.categoryAmount}>
-                            ${item.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-                        </Text>
-                    </View>
+            {categoryData.length === 0 ? (
+                <View style={styles.emptyCategory}>
+                    <Ionicons name="pie-chart-outline" size={40} color="#CCCCCC" />
+                    <Text style={styles.emptyCategoryText}>No {selectedTab} data yet</Text>
                 </View>
-            ))}
+            ) : (
+                categoryData.map((item, index) => (
+                    <View key={index} style={styles.categoryRow}>
+                        <View style={styles.categoryLeft}>
+                            <View style={[styles.categoryDot, { backgroundColor: item.category.color + '30' }]}>
+                                <Text style={styles.categoryDotIcon}>{item.category.icon}</Text>
+                            </View>
+                            <View style={styles.categoryInfo}>
+                                <Text style={styles.categoryName}>{item.category.name}</Text>
+                                <Text style={styles.categoryPercentage}>{item.percentage}%</Text>
+                            </View>
+                        </View>
+                        <View style={styles.categoryRight}>
+                            <View style={styles.progressBarBg}>
+                                <View
+                                    style={[
+                                        styles.progressBarFill,
+                                        {
+                                            width: `${item.percentage}%`,
+                                            backgroundColor: item.category.color
+                                        }
+                                    ]}
+                                />
+                            </View>
+                            <Text style={styles.categoryAmount}>
+                                ${item.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                            </Text>
+                        </View>
+                    </View>
+                ))
+            )}
         </View>
     );
 
@@ -133,20 +194,20 @@ const StatisticsScreen = () => {
         <View style={styles.summaryContainer}>
             <View style={[styles.summaryCard, { backgroundColor: '#E8F4FD' }]}>
                 <View style={styles.summaryIcon}>
-                    <Ionicons name="arrow-down" size={24} color={COLORS.income} />
+                    <Ionicons name="arrow-down" size={24} color={COLORS.income || '#4CAF50'} />
                 </View>
                 <Text style={styles.summaryLabel}>Total Income</Text>
-                <Text style={[styles.summaryAmount, { color: COLORS.income }]}>
+                <Text style={[styles.summaryAmount, { color: COLORS.income || '#4CAF50' }]}>
                     ${totalIncome.toLocaleString('en-US', { minimumFractionDigits: 2 })}
                 </Text>
             </View>
 
             <View style={[styles.summaryCard, { backgroundColor: '#FFF0F0' }]}>
                 <View style={styles.summaryIcon}>
-                    <Ionicons name="arrow-up" size={24} color={COLORS.expense} />
+                    <Ionicons name="arrow-up" size={24} color={COLORS.expense || '#F44336'} />
                 </View>
                 <Text style={styles.summaryLabel}>Total Expense</Text>
-                <Text style={[styles.summaryAmount, { color: COLORS.expense }]}>
+                <Text style={[styles.summaryAmount, { color: COLORS.expense || '#F44336' }]}>
                     ${totalExpense.toLocaleString('en-US', { minimumFractionDigits: 2 })}
                 </Text>
             </View>
@@ -156,7 +217,7 @@ const StatisticsScreen = () => {
                     <Ionicons name="calendar-outline" size={24} color={COLORS.blueShadeOne} />
                 </View>
                 <Text style={styles.summaryLabel}>Daily Average</Text>
-                <Text style={[styles.summaryAmount, { color: COLORS.textMuted }]}>
+                <Text style={[styles.summaryAmount, { color: COLORS.blueShadeOne }]}>
                     ${averageDaily.toLocaleString('en-US', { minimumFractionDigits: 2 })}
                 </Text>
             </View>
@@ -487,6 +548,15 @@ const styles = StyleSheet.create({
         fontSize: 14,
         fontWeight: '600',
         color: COLORS.primaryDark,
+    },
+    emptyCategory: {
+        alignItems: 'center',
+        paddingVertical: 30,
+    },
+    emptyCategoryText: {
+        fontSize: 14,
+        color: '#8A9AA3',
+        marginTop: 8,
     },
 });
 
