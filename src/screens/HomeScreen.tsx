@@ -12,56 +12,27 @@ import { COLORS } from "../constants/colors";
 import BalanceCard from "../components/BalanceCard";
 import TransactionItem from "../components/TransactionItem";
 import SectionHeader from "../components/SectionHeader";
+import {useTransactionStore} from "../store/useTransactionStore";
+import {useNavigation} from "@react-navigation/native";
 
 const HomeScreen = () => {
+    const navigation = useNavigation<any>();
+    const transactions = useTransactionStore((state) => state.transactions);
+    const getTotalBalance = useTransactionStore((state) => state.getTotalBalance);
+    const getTotalIncome = useTransactionStore((state) => state.getTotalIncome);
+    const getTotalExpense = useTransactionStore((state) => state.getTotalExpense);
+
+    // Get latest 4 transactions
+    const recentTransactions = [...transactions]
+        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+        .slice(0, 4);
+
     const userData = {
         name: "Enjelin Morgeana",
-        totalBalance: 2548.00,
-        income: 1840.00,
-        expenses: 284.00,
+        totalBalance: getTotalBalance(),
+        income: getTotalIncome(),
+        expenses: getTotalExpense(),
     };
-
-    const transactions: Array<{
-        id: string;
-        title: string;
-        amount: number;
-        type: 'income' | 'expense';
-        date: string;
-        icon: string;
-    }> = [
-        {
-            id: '1',
-            title: 'Upwork',
-            amount: 850.00,
-            type: 'income' as const,
-            date: 'Today',
-            icon: '💼',
-        },
-        {
-            id: '2',
-            title: 'Transfer',
-            amount: 85.00,
-            type: 'expense' as const,
-            date: 'Yesterday',
-            icon: '🔄',
-        },
-        {
-            id: '3',
-            title: 'Paypal',
-            amount: 1406.00,
-            type: 'income' as const,
-            date: 'Jan 30, 2022',
-            icon: '💰',
-        },
-        {
-            id: '4',
-            title: 'Youtube',
-            amount: 11.99,
-            type: 'expense' as const,
-            date: 'Jan 16, 2022',
-            icon: '▶️',
-        },
-    ];
 
     return (
         <SafeAreaView style={styles.container}>
