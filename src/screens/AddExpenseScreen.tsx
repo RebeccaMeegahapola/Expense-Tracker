@@ -8,16 +8,31 @@ import {
     ScrollView,
     TouchableOpacity,
     TextInput,
-    Platform,
+    Platform, Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS } from '../constants/colors';
 import CategorySelector, { Category } from '../components/CategorySelector';
+import {useNavigation} from "@react-navigation/native";
+import {useTransactionStore} from "../store/useTransactionStore";
+import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 
 const AddExpenseScreen = () => {
-    const [name, setName] = useState('Netflix');
-    const [amount, setAmount] = useState('48.00');
-    const [date, setDate] = useState('Tue, 22 Feb 2022');
+    const navigation = useNavigation<any>();
+    const addTransaction = useTransactionStore((state) => state.addTransaction);
+
+    const [name, setName] = useState('');
+    const [amount, setAmount] = useState('');
+    const [selectedDate, setSelectedDate] = useState(new Date());
+    const [showDatePicker, setShowDatePicker] = useState(false);
+    const [date, setDate] = useState(
+        new Date().toLocaleDateString('en-US', {
+            weekday: 'short',
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric',
+        })
+    );
     const [selectedType, setSelectedType] = useState<'income' | 'expense'>('expense');
     const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
 
@@ -32,14 +47,55 @@ const AddExpenseScreen = () => {
         }
     };
 
+    const onDateChange = (event: DateTimePickerEvent, date?: Date) => {
+        setShowDatePicker(Platform.OS === 'ios');
+        if (date) {
+            setSelectedDate(date);
+            setDate(
+                date.toLocaleDateString('en-US', {
+                    weekday: 'short',
+                    day: '2-digit',
+                    month: 'short',
+                    year: 'numeric',
+                })
+            );
+        }
+    };
+
     const handleSave = () => {
-        console.log({
-            name,
-            amount,
-            date,
+        // Validation
+        if (!name.trim()) {
+            Alert.alert('Error', 'Please enter a name');
+            return;
+        }
+        if (!amount || parseFloat(amount) <= 0) {
+            Alert.alert('Error', 'Please enter a valid amount');
+            return;
+        }
+        if (!selectedCategory) {
+            Alert.alert('Error', 'Please select a category');
+            return;
+        }
+
+        // Add transaction to store
+        addTransaction({
+            title: name,
+            amount: parseFloat(amount),
             type: selectedType,
+            date: 'Today',
+            icon: selectedCategory.icon,
             category: selectedCategory,
         });
+
+        // Reset form
+        setName('');
+        setAmount('');
+        setSelectedCategory(null);
+        setSelectedType('expense');
+
+        Alert.alert('Success', 'Transaction saved!', [
+            { text: 'OK', onPress: () => navigation.goBack() }
+        ]);
     };
 
     return (
@@ -114,7 +170,11 @@ const AddExpenseScreen = () => {
                                         placeholder="Enter name"
                                         placeholderTextColor="#B0BEC5"
                                     />
-                                    <Ionicons name="close" size={20} color="#8A9AA3" />
+                                    {name !== '' && (
+                                        <TouchableOpacity onPress={() => setName('')}>
+                                            <Ionicons name="close-circle" size={20} color="#8A9AA3" />
+                                        </TouchableOpacity>
+                                    )}
                                 </View>
                             </View>
                         </View>
@@ -132,20 +192,37 @@ const AddExpenseScreen = () => {
                                         placeholderTextColor="#B0BEC5"
                                         keyboardType="decimal-pad"
                                     />
-                                    <Ionicons name="close" size={20} color="#8A9AA3" />
+                                    {amount !== '' && (
+                                        <TouchableOpacity onPress={handleClear}>
+                                            <Ionicons name="close-circle" size={20} color="#8A9AA3" />
+                                        </TouchableOpacity>
+                                    )}
                                 </View>
                             </View>
                         </View>
 
                         <View style={[styles.inputGroup, styles.lastInputGroup]}>
                             <Text style={styles.inputLabel}>DATE</Text>
-                            <TouchableOpacity style={styles.borderedInput}>
+                            <TouchableOpacity
+                                style={styles.borderedInput}
+                                onPress={() => setShowDatePicker(true)}
+                            >
                                 <View style={styles.dateInputContainer}>
                                     <Text style={styles.dateText}>{date}</Text>
                                     <Ionicons name="calendar-outline" size={20} color="#8A9AA3" />
                                 </View>
                             </TouchableOpacity>
                         </View>
+
+                        {showDatePicker && (
+                            <DateTimePicker
+                                value={selectedDate}
+                                mode="date"
+                                display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                                onChange={onDateChange}
+                                maximumDate={new Date()}
+                            />
+                        )}
                     </View>
                 </View>
 
