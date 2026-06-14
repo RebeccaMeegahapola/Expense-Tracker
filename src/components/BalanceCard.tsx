@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
         fontWeight: '500',
     },
     balanceAmount: {
-        fontSize: 36,
+        fontSize: 32,
         fontWeight: '700',
         color: COLORS.primaryDark,
         marginBottom: 20,
