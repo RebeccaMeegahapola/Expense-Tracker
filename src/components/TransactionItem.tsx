@@ -6,6 +6,7 @@ import {
     TouchableOpacity,
 } from 'react-native';
 import { COLORS } from '../constants/colors';
+import {Ionicons} from "@expo/vector-icons";
 
 interface TransactionItemProps {
     title: string;
@@ -14,7 +15,7 @@ interface TransactionItemProps {
     date: string;
     icon: string;
     onPress?: () => void;
-    onLongPress?: () => void;
+    onDelete?: () => void;
 }
 
 const TransactionItem: React.FC<TransactionItemProps> = ({
@@ -24,7 +25,7 @@ const TransactionItem: React.FC<TransactionItemProps> = ({
         date,
         icon,
         onPress,
-        onLongPress,
+        onDelete,
     }) => {
     const isIncome = type === 'income';
     const amountColor = isIncome ? COLORS.income : COLORS.expense;
@@ -34,14 +35,12 @@ const TransactionItem: React.FC<TransactionItemProps> = ({
         <TouchableOpacity
             style={styles.container}
             onPress={onPress}
-            onLongPress={onLongPress}
             activeOpacity={0.7}
-            disabled={!onPress}
         >
             <View style={styles.leftSection}>
                 <View style={[
                     styles.iconContainer,
-
+                    { backgroundColor: isIncome ? '#E8F8E8' : '#FFF0F0' }
                 ]}>
                     <Text style={styles.iconText}>{icon}</Text>
                 </View>
@@ -52,9 +51,20 @@ const TransactionItem: React.FC<TransactionItemProps> = ({
                 </View>
             </View>
 
-            <Text style={[styles.amount, { color: amountColor }]}>
-                {amountPrefix}${amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-            </Text>
+            <View style={styles.rightSection}>
+                <Text style={[styles.amount, { color: amountColor }]}>
+                    {amountPrefix}${amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                </Text>
+
+                {/* 👇 Delete Icon Button */}
+                <TouchableOpacity
+                    style={styles.deleteButton}
+                    onPress={onDelete}
+                    hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                >
+                    <Ionicons name="trash-outline" size={18} color="#F44336" />
+                </TouchableOpacity>
+            </View>
         </TouchableOpacity>
     );
 };
@@ -96,9 +106,17 @@ const styles = StyleSheet.create({
         color: '#8A9AA3',
         fontWeight: '400',
     },
+    rightSection: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 12,
+    },
     amount: {
         fontSize: 16,
         fontWeight: '600',
+    },
+    deleteButton: {
+        padding: 4,
     },
 });
 
