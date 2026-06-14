@@ -78,7 +78,7 @@ const EditTransactionScreen = () => {
                     <View style={styles.circle3} />
 
                     <View style={styles.topRow}>
-                        <Text style={styles.timeText}>9:41</Text>
+                        <Text style={styles.headerTitle}>Edit Transaction</Text>
                         <TouchableOpacity
                             style={styles.closeButton}
                             onPress={() => navigation.goBack()}
@@ -86,8 +86,6 @@ const EditTransactionScreen = () => {
                             <Ionicons name="close" size={24} color={COLORS.white} />
                         </TouchableOpacity>
                     </View>
-
-                    <Text style={styles.headerTitle}>Edit Transaction</Text>
                 </View>
 
                 {/* Form Card */}
@@ -160,8 +158,13 @@ const EditTransactionScreen = () => {
 };
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: COLORS.background },
-    scrollContent: { paddingBottom: 30 },
+    container: {
+        flex: 1,
+        backgroundColor: COLORS.background,
+    },
+    scrollContent: {
+        paddingBottom: 30,
+    },
     curvedHeader: {
         backgroundColor: COLORS.primary,
         paddingTop: Platform.OS === 'android' ? (StatusBar.currentHeight || 0) + 10 : 50,
@@ -171,31 +174,169 @@ const styles = StyleSheet.create({
         overflow: 'hidden',
         position: 'relative',
     },
-    circle1: { position: 'absolute', width: 250, height: 250, borderRadius: 125, backgroundColor: 'rgba(255, 255, 255, 0.08)', top: -80, right: -60 },
-    circle2: { position: 'absolute', width: 150, height: 150, borderRadius: 75, backgroundColor: 'rgba(255, 255, 255, 0.06)', bottom: -30, left: -40 },
-    circle3: { position: 'absolute', width: 100, height: 100, borderRadius: 50, backgroundColor: 'rgba(255, 255, 255, 0.1)', top: 40, left: 30 },
-    topRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, marginBottom: 10, zIndex: 1 },
-    timeText: { fontSize: 17, fontWeight: '600', color: COLORS.white },
-    closeButton: { width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(255, 255, 255, 0.2)', justifyContent: 'center', alignItems: 'center' },
-    headerTitle: { fontSize: 28, fontWeight: '700', color: COLORS.white, paddingHorizontal: 20, zIndex: 1 },
-    formCardWrapper: { paddingHorizontal: 20, marginTop: -40, marginBottom: 20 },
-    formCard: { backgroundColor: COLORS.white, padding: 20, borderRadius: 20, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.1, shadowRadius: 12, elevation: 5 },
-    typeToggle: { flexDirection: 'row', backgroundColor: '#F5F5F5', borderRadius: 30, padding: 4, marginBottom: 20 },
-    typeButton: { flex: 1, paddingVertical: 12, alignItems: 'center', borderRadius: 26 },
-    typeButtonActive: { backgroundColor: COLORS.primary },
-    typeButtonText: { fontSize: 15, fontWeight: '600', color: '#8A9AA3' },
-    typeButtonTextActive: { color: COLORS.white },
-    inputGroup: { marginBottom: 24 },
-    inputLabel: { fontSize: 12, fontWeight: '600', color: '#8A9AA3', letterSpacing: 1, marginBottom: 8 },
-    borderedInput: { borderWidth: 1, borderColor: '#E0E0E0', borderRadius: 12, paddingHorizontal: 16, paddingVertical: 14, backgroundColor: COLORS.white },
-    input: { fontSize: 16, color: COLORS.primaryDark, fontWeight: '500', padding: 0 },
-    amountInputContainer: { flexDirection: 'row', alignItems: 'center' },
-    dollarSign: { fontSize: 18, fontWeight: '600', color: COLORS.primaryDark, marginRight: 4 },
-    amountInput: { flex: 1, fontSize: 18, fontWeight: '600', color: COLORS.primaryDark, padding: 0 },
-    clearButton: { paddingHorizontal: 12, paddingVertical: 6, backgroundColor: '#F5F5F5', borderRadius: 16 },
-    clearButtonText: { fontSize: 14, color: '#8A9AA3', fontWeight: '500' },
-    saveButton: { backgroundColor: COLORS.primary, marginHorizontal: 20, paddingVertical: 18, borderRadius: 30, alignItems: 'center', marginTop: 10, shadowColor: COLORS.primary, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 5 },
-    saveButtonText: { fontSize: 18, fontWeight: '600', color: COLORS.white },
+    circle1: {
+        position: 'absolute',
+        width: 250,
+        height: 250,
+        borderRadius: 125,
+        backgroundColor: 'rgba(255, 255, 255, 0.08)',
+        top: -80,
+        right: -60,
+    },
+    circle2: {
+        position: 'absolute',
+        width: 150,
+        height: 150,
+        borderRadius: 75,
+        backgroundColor: 'rgba(255, 255, 255, 0.06)',
+        bottom: -30,
+        left: -40,
+    },
+    circle3: {
+        position: 'absolute',
+        width: 100,
+        height: 100,
+        borderRadius: 50,
+        backgroundColor: 'rgba(255, 255, 255, 0.1)',
+        top: 40,
+        left: 30,
+    },
+    topRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingHorizontal: 20,
+        marginBottom: 10,
+        zIndex: 1,
+    },
+    timeText: {
+        fontSize: 17,
+        fontWeight: '600',
+        color: COLORS.white,
+    },
+    closeButton: {
+        width: 36,
+        height: 36,
+        borderRadius: 18,
+        backgroundColor: 'rgba(255, 255, 255, 0.2)',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    headerTitle: {
+        fontSize: 20,
+        fontWeight: '700',
+        color: COLORS.white,
+        zIndex: 1,
+    },
+    formCardWrapper: {
+        paddingHorizontal: 20,
+        marginTop: -40,
+        marginBottom: 20,
+    },
+    formCard: {
+        backgroundColor: COLORS.white,
+        padding: 20,
+        borderRadius: 20,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.1,
+        shadowRadius: 12,
+        elevation: 5,
+    },
+    typeToggle: {
+        flexDirection: 'row',
+        backgroundColor: '#F5F5F5',
+        borderRadius: 30,
+        padding: 4,
+        marginBottom: 20,
+    },
+    typeButton: {
+        flex: 1,
+        paddingVertical: 12,
+        alignItems: 'center',
+        borderRadius: 26,
+    },
+    typeButtonActive: {
+        backgroundColor: COLORS.primary,
+    },
+    typeButtonText: {
+        fontSize: 15,
+        fontWeight: '600',
+        color: '#8A9AA3',
+    },
+    typeButtonTextActive: {
+        color: COLORS.white,
+    },
+    inputGroup: {
+        marginBottom: 24,
+    },
+    inputLabel: {
+        fontSize: 12,
+        fontWeight: '600',
+        color: '#8A9AA3',
+        letterSpacing: 1,
+        marginBottom: 8,
+    },
+    borderedInput: {
+        borderWidth: 1,
+        borderColor: '#E0E0E0',
+        borderRadius: 12,
+        paddingHorizontal: 16,
+        paddingVertical: 14,
+        backgroundColor: COLORS.white,
+    },
+    input: {
+        fontSize: 16,
+        color: COLORS.primaryDark,
+        fontWeight: '500',
+        padding: 0,
+    },
+    amountInputContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    dollarSign: {
+        fontSize: 18,
+        fontWeight: '600',
+        color: COLORS.primaryDark,
+        marginRight: 4,
+    },
+    amountInput: {
+        flex: 1,
+        fontSize: 18,
+        fontWeight: '600',
+        color: COLORS.primaryDark,
+        padding: 0,
+    },
+    clearButton: {
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+        backgroundColor: '#F5F5F5',
+        borderRadius: 16,
+    },
+    clearButtonText: {
+        fontSize: 14,
+        color: '#8A9AA3',
+        fontWeight: '500',
+    },
+    saveButton: {
+        backgroundColor: COLORS.primary,
+        marginHorizontal: 20,
+        paddingVertical: 18,
+        borderRadius: 30,
+        alignItems: 'center',
+        marginTop: 10,
+        shadowColor: COLORS.primary,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.2,
+        shadowRadius: 8,
+        elevation: 5,
+    },
+    saveButtonText: {
+        fontSize: 18,
+        fontWeight: '600',
+        color: COLORS.white,
+    },
 });
 
 export default EditTransactionScreen;
