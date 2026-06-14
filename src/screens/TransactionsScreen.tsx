@@ -118,7 +118,7 @@ const TransactionsScreen = () => {
                         date={transaction.time}
                         icon={transaction.icon}
                         onPress={() => navigation.navigate('EditTransaction', { transaction })}
-                        onLongPress={() => handleDeleteTransaction(transaction)}
+                        onDelete={() => handleDeleteTransaction(transaction)}
                     />
                 ))}
             </View>
