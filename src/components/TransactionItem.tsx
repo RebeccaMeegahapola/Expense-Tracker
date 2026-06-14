@@ -14,6 +14,7 @@ interface TransactionItemProps {
     date: string;
     icon: string;
     onPress?: () => void;
+    onLongPress?: () => void;
 }
 
 const TransactionItem: React.FC<TransactionItemProps> = ({
@@ -22,7 +23,8 @@ const TransactionItem: React.FC<TransactionItemProps> = ({
         type,
         date,
         icon,
-        onPress
+        onPress,
+        onLongPress,
     }) => {
     const isIncome = type === 'income';
     const amountColor = isIncome ? COLORS.income : COLORS.expense;
@@ -32,6 +34,7 @@ const TransactionItem: React.FC<TransactionItemProps> = ({
         <TouchableOpacity
             style={styles.container}
             onPress={onPress}
+            onLongPress={onLongPress}
             activeOpacity={0.7}
             disabled={!onPress}
         >
