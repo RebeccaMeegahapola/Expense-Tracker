@@ -59,7 +59,7 @@ const BottomTabNavigator = () => {
             <Tab.Screen
                 name="Statistics"
                 component={StatisticsScreen}
-                options={{ headerShown: true }}
+                options={{ headerShown: false }}
             />
             <Tab.Screen
                 name="Add"
