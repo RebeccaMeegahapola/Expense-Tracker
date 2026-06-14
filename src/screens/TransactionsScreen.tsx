@@ -6,104 +6,23 @@ import {
     SafeAreaView,
     StatusBar,
     FlatList,
-    TouchableOpacity, Platform,
+    TouchableOpacity, Platform, Alert,
 } from 'react-native';
 import { COLORS } from '../constants/colors';
 import TransactionItem from '../components/TransactionItem';
 import { Ionicons } from '@expo/vector-icons';
+import {useTransactionStore} from "../store/useTransactionStore";
+import { useNavigation } from '@react-navigation/native';
 
 const TransactionsScreen = () => {
+    const navigation = useNavigation<any>();
     const [selectedFilter, setSelectedFilter] = useState<'all' | 'income' | 'expense'>('all');
 
-    // Dummy transaction data
-    const allTransactions = [
-        {
-            id: '1',
-            title: 'Upwork',
-            amount: 850.00,
-            type: 'income' as const,
-            date: 'Today',
-            time: '10:30 AM',
-            icon: '💼',
-            category: 'Freelance',
-        },
-        {
-            id: '2',
-            title: 'Transfer',
-            amount: 85.00,
-            type: 'expense' as const,
-            date: 'Yesterday',
-            time: '2:15 PM',
-            icon: '🔄',
-            category: 'Transfer',
-        },
-        {
-            id: '3',
-            title: 'Paypal',
-            amount: 1406.00,
-            type: 'income' as const,
-            date: 'Jan 30, 2022',
-            time: '9:00 AM',
-            icon: '💰',
-            category: 'Payment',
-        },
-        {
-            id: '4',
-            title: 'Youtube',
-            amount: 11.99,
-            type: 'expense' as const,
-            date: 'Jan 16, 2022',
-            time: '5:45 PM',
-            icon: '▶️',
-            category: 'Entertainment',
-        },
-        {
-            id: '5',
-            title: 'Starbucks',
-            amount: 5.40,
-            type: 'expense' as const,
-            date: 'Jan 15, 2022',
-            time: '8:30 AM',
-            icon: '☕',
-            category: 'Food & Drink',
-        },
-        {
-            id: '6',
-            title: 'Apple',
-            amount: 999.00,
-            type: 'expense' as const,
-            date: 'Jan 10, 2022',
-            time: '3:20 PM',
-            icon: '🍎',
-            category: 'Shopping',
-        },
-        {
-            id: '7',
-            title: 'Freelance Project',
-            amount: 2500.00,
-            type: 'income' as const,
-            date: 'Jan 5, 2022',
-            time: '11:00 AM',
-            icon: '💻',
-            category: 'Freelance',
-        },
-        {
-            id: '8',
-            title: 'Netflix',
-            amount: 15.99,
-            type: 'expense' as const,
-            date: 'Jan 1, 2022',
-            time: '12:00 AM',
-            icon: '🎬',
-            category: 'Entertainment',
-        },
-    ];
+    // Get data from store
+    const getTransactionsByType = useTransactionStore((state) => state.getTransactionsByType);
+    const deleteTransaction = useTransactionStore((state) => state.deleteTransaction);
 
-    // Filter transactions based on selected filter
-    const filteredTransactions = allTransactions.filter(transaction => {
-        if (selectedFilter === 'all') return true;
-        return transaction.type === selectedFilter;
-    });
+    const filteredTransactions = getTransactionsByType(selectedFilter);
 
     // Group transactions by date
     const groupedTransactions = filteredTransactions.reduce((groups: any, transaction) => {
@@ -114,6 +33,21 @@ const TransactionsScreen = () => {
         groups[date].push(transaction);
         return groups;
     }, {});
+
+    const handleDeleteTransaction = (transaction: any) => {
+        Alert.alert(
+            'Delete Transaction',
+            `Are you sure you want to delete "${transaction.title}"?`,
+            [
+                { text: 'Cancel', style: 'cancel' },
+                {
+                    text: 'Delete',
+                    style: 'destructive',
+                    onPress: () => deleteTransaction(transaction.id),
+                },
+            ]
+        );
+    };
 
     const dateKeys = Object.keys(groupedTransactions);
 
@@ -183,7 +117,8 @@ const TransactionsScreen = () => {
                         type={transaction.type}
                         date={transaction.time}
                         icon={transaction.icon}
-                        onPress={() => console.log(`Pressed ${transaction.title}`)}
+                        onPress={() => navigation.navigate('EditTransaction', { transaction })}
+                        onLongPress={() => handleDeleteTransaction(transaction)}
                     />
                 ))}
             </View>
