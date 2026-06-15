@@ -6,10 +6,12 @@ interface AuthState {
     isLoggedIn: boolean;
     userPin: string | null;
     userName: string;
+    avatarColor: string;
     setPin: (pin: string) => void;
     login: (pin: string) => boolean;
     logout: () => void;
     setUserName: (name: string) => void;
+    setAvatarColor: (color: string) => void;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -18,6 +20,7 @@ export const useAuthStore = create<AuthState>()(
             isLoggedIn: false,
             userPin: null,
             userName: 'Rebecca Meegahapola',
+            avatarColor: '#4F9C95',
 
             setPin: (pin: string) => {
                 set({ userPin: pin });
@@ -38,6 +41,10 @@ export const useAuthStore = create<AuthState>()(
 
             setUserName: (name: string) => {
                 set({ userName: name });
+            },
+
+            setAvatarColor: (color: string) => {
+                set({ avatarColor: color });
             },
         }),
         {
