@@ -36,7 +36,7 @@ const SetupPinScreen = () => {
             if (newConfirm.length === 4) {
                 if (newConfirm === pin) {
                     setPin(newConfirm);
-                    navigation.replace('MainApp');
+                    navigation.replace('ProfileSetup');
                 } else {
                     setError('PINs do not match. Try again.');
                     setPinState('');
@@ -56,6 +56,18 @@ const SetupPinScreen = () => {
         setError('');
     };
 
+    const handleBack = () => {
+        if (step === 'confirm') {
+            // Go back to create step
+            setStep('create');
+            setConfirmPin('');
+            setError('');
+        } else {
+            // Go to Onboarding
+            navigation.replace('OnBoarding');
+        }
+    };
+
     return (
         <SafeAreaView style={styles.container}>
             <StatusBar barStyle="light-content" backgroundColor={COLORS.primary} />
@@ -67,7 +79,7 @@ const SetupPinScreen = () => {
 
                 <TouchableOpacity
                     style={styles.backButton}
-                    onPress={() => navigation.goBack()}
+                    onPress={handleBack}
                 >
                     <Ionicons name="arrow-back" size={24} color={COLORS.white} />
                 </TouchableOpacity>
