@@ -5,6 +5,8 @@ import SplashScreen from './src/screens/SplashScreen';
 import BottomTabNavigator from './src/navigation/BottomTabNavigator';
 import OnboardingScreen from "./src/screens/OnboardingScreen";
 import EditTransactionScreen from "./src/screens/EditTransactionScreen";
+import SetupPinScreen from "./src/screens/SetupPinScreen";
+import LoginScreen from "./src/screens/LoginScreen";
 
 const Stack = createStackNavigator();
 
@@ -16,6 +18,8 @@ const App = () => {
             <Stack.Navigator screenOptions={{ headerShown: false }}>
                 <Stack.Screen name="Splash" component={SplashScreen} />
                 <Stack.Screen name="OnBoarding" component={OnboardingScreen} />
+                <Stack.Screen name="SetupPin" component={SetupPinScreen} />
+                <Stack.Screen name="Login" component={LoginScreen} />
                 <Stack.Screen name="MainApp" component={BottomTabNavigator} />
                 <Stack.Screen name="EditTransaction" component={EditTransactionScreen} />
             </Stack.Navigator>
