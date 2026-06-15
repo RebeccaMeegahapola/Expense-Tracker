@@ -82,7 +82,7 @@ const AddExpenseScreen = () => {
             title: name,
             amount: parseFloat(amount),
             type: selectedType,
-            date: 'Today',
+            date: selectedDate.toDateString(),
             icon: selectedCategory.icon,
             category: selectedCategory,
         });
