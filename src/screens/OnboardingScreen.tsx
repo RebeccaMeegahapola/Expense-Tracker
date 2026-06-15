@@ -29,15 +29,17 @@ export default function OnboardingScreen({ navigation }: any) {
 
                 <TouchableOpacity
                     style={styles.button}
-                    onPress={() => navigation.replace('MainApp')}
+                    onPress={() => navigation.replace('SetupPin')}
                 >
                     <Text style={styles.buttonText}>Get Started</Text>
                 </TouchableOpacity>
 
-                <Text style={styles.loginText}>
-                    Already Have Account?{' '}
-                    <Text style={styles.loginLink}>Log In</Text>
-                </Text>
+                <TouchableOpacity onPress={() => navigation.replace('Login')}>
+                    <Text style={styles.loginText}>
+                        Already Have Account?{' '}
+                        <Text style={styles.loginLink}>Log In</Text>
+                    </Text>
+                </TouchableOpacity>
             </View>
         </SafeAreaView>
     );
