@@ -29,7 +29,7 @@ const HomeScreen = () => {
         .slice(0, 4);
 
     const userData = {
-        name: "Enjelin Morgeana",
+        name: "Rebecca Meegahapola",
         totalBalance: getTotalBalance(),
         income: getTotalIncome(),
         expenses: getTotalExpense(),
