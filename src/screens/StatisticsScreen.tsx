@@ -59,22 +59,10 @@ const StatisticsScreen = () => {
 
     // Weekly data
     const weeklyData = useMemo(() => {
-        // Demo data with different heights (fallback)
-        const demoData = [
-            { day: 'Mon', amount: 120 },
-            { day: 'Tue', amount: 200 },
-            { day: 'Wed', amount: 80 },
-            { day: 'Thu', amount: 250 },
-            { day: 'Fri', amount: 180 },
-            { day: 'Sat', amount: 300 },
-            { day: 'Sun', amount: 150 },
-        ];
-
-        // Try to get real data
         const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
         const today = new Date();
-        const realData = [];
-        let hasDifferentValues = false;
+        const data = [];
+        let hasAnyData = false;
 
         for (let i = 6; i >= 0; i--) {
             const date = new Date(today);
@@ -82,26 +70,41 @@ const StatisticsScreen = () => {
             const dayName = days[date.getDay()];
             const dateStr = date.toDateString();
 
-            // Filter transactions for this specific day
+            // Sum transactions for this specific day
             const dayTotal = transactions
                 .filter((t) => {
-                    return t.date === dateStr && t.type === 'expense';
+                    return t.date === dateStr && t.type === selectedTab;
                 })
                 .reduce((sum, t) => sum + t.amount, 0);
 
-            realData.push({ day: dayName, amount: dayTotal });
+            if (dayTotal > 0) hasAnyData = true;
+            data.push({ day: dayName, amount: dayTotal });
         }
 
-        // Check if all values are the same
-        const firstAmount = realData[0]?.amount || 0;
-        hasDifferentValues = realData.some(d => d.amount !== firstAmount);
+        // If no real data found, use demo data
+        if (!hasAnyData) {
+            return [
+                { day: 'Mon', amount: 120 },
+                { day: 'Tue', amount: 200 },
+                { day: 'Wed', amount: 80 },
+                { day: 'Thu', amount: 250 },
+                { day: 'Fri', amount: 180 },
+                { day: 'Sat', amount: 300 },
+                { day: 'Sun', amount: 150 },
+            ];
+        }
 
-        // Only use real data if it has different values
-        return hasDifferentValues ? realData : demoData;
-    }, [transactions]);
+        return data;
+    }, [transactions, selectedTab]);
 
     const maxBarHeight = 150;
     const maxAmount = Math.max(...weeklyData.map((d) => d.amount), 1);
+
+    // Add this check to prevent division by zero:
+    const getBarHeight = (amount: number) => {
+        if (maxAmount === 0) return 4; // Minimum height
+        return (amount / maxAmount) * maxBarHeight;
+    };
 
     const renderBarChart = () => (
         <View style={styles.chartCard}>
@@ -131,7 +134,7 @@ const StatisticsScreen = () => {
             {/* Bar Chart */}
             <View style={styles.barChartContainer}>
                 {weeklyData.map((item, index) => {
-                    const barHeight = maxAmount > 0 ? (item.amount / maxAmount) * maxBarHeight : 0;
+                    const barHeight = getBarHeight(item.amount);
                     return (
                         <View key={index} style={styles.barWrapper}>
                             <Text style={styles.barValue}>${item.amount}</Text>
