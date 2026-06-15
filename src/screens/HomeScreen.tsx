@@ -6,7 +6,7 @@ import {
     StyleSheet,
     StatusBar,
     SafeAreaView,
-    Platform,
+    Platform, Alert,
 } from 'react-native';
 import { COLORS } from "../constants/colors";
 import BalanceCard from "../components/BalanceCard";
@@ -21,6 +21,7 @@ const HomeScreen = () => {
     const getTotalBalance = useTransactionStore((state) => state.getTotalBalance);
     const getTotalIncome = useTransactionStore((state) => state.getTotalIncome);
     const getTotalExpense = useTransactionStore((state) => state.getTotalExpense);
+    const deleteTransaction = useTransactionStore((state) => state.deleteTransaction);
 
     // Get latest 4 transactions
     const recentTransactions = [...transactions]
@@ -32,6 +33,27 @@ const HomeScreen = () => {
         totalBalance: getTotalBalance(),
         income: getTotalIncome(),
         expenses: getTotalExpense(),
+    };
+
+    // 👇 Add delete handler
+    const handleDeleteTransaction = (transaction: any) => {
+        Alert.alert(
+            'Delete Transaction',
+            `Are you sure you want to delete "${transaction.title}"?`,
+            [
+                { text: 'Cancel', style: 'cancel' },
+                {
+                    text: 'Delete',
+                    style: 'destructive',
+                    onPress: () => deleteTransaction(transaction.id),
+                },
+            ]
+        );
+    };
+
+    // 👇 Add edit handler
+    const handleEditTransaction = (transaction: any) => {
+        navigation.navigate('EditTransaction', { transaction });
     };
 
     return (
@@ -66,7 +88,7 @@ const HomeScreen = () => {
                 <View style={styles.transactionsContainer}>
                     <SectionHeader
                         title="Transactions History"
-                        onSeeAll={() => console.log('See all transactions')}
+                        onSeeAll={() => navigation.navigate('Transactions')}
                     />
 
                     {transactions.map((transaction) => (
@@ -77,7 +99,8 @@ const HomeScreen = () => {
                             type={transaction.type}
                             date={transaction.date}
                             icon={transaction.icon}
-                            onPress={() => console.log(`Pressed ${transaction.title}`)}
+                            onPress={() => handleEditTransaction(transaction)}
+                            onDelete={() => handleDeleteTransaction(transaction)}
                         />
                     ))}
                 </View>
