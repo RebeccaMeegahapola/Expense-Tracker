@@ -35,7 +35,7 @@ const HomeScreen = () => {
         expenses: getTotalExpense(),
     };
 
-    // 👇 Add delete handler
+    // Add delete handler
     const handleDeleteTransaction = (transaction: any) => {
         Alert.alert(
             'Delete Transaction',
@@ -51,9 +51,16 @@ const HomeScreen = () => {
         );
     };
 
-    // 👇 Add edit handler
+    // Add edit handler
     const handleEditTransaction = (transaction: any) => {
         navigation.navigate('EditTransaction', { transaction });
+    };
+
+    const getGreeting = () => {
+        const hour = new Date().getHours();
+        if (hour < 12) return 'Good morning,';
+        if (hour < 17) return 'Good afternoon,';
+        return 'Good evening,';
     };
 
     return (
@@ -71,7 +78,7 @@ const HomeScreen = () => {
                     <View style={styles.circle4} />
 
                     <View style={styles.greetingContainer}>
-                        <Text style={styles.greeting}>Good afternoon,</Text>
+                        <Text style={styles.greeting}>{getGreeting()}</Text>
                         <Text style={styles.userName}>{userData.name}</Text>
                     </View>
                 </View>
