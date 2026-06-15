@@ -1,4 +1,3 @@
-// src/screens/ProfileScreen.tsx
 import React from 'react';
 import {
     View,
@@ -9,61 +8,106 @@ import {
     ScrollView,
     TouchableOpacity,
     Platform,
+    Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 import { COLORS } from '../constants/colors';
+import { useAuthStore } from '../store/useAuthStore';
 
 const ProfileScreen = () => {
+    const navigation = useNavigation<any>();
+    const userName = useAuthStore((state) => state.userName);
+    const avatarColor = useAuthStore((state) => state.avatarColor);
+    const logout = useAuthStore((state) => state.logout);
+
+    // Generate dynamic user data from auth store
+    const getInitials = (name: string) => {
+        const names = name.split(' ');
+        if (names.length >= 2) {
+            return (names[0][0] + names[names.length - 1][0]).toUpperCase();
+        }
+        return name.substring(0, 2).toUpperCase();
+    };
+
     const userData = {
-        name: 'Enjelin Morgeana',
-        username: '@enjelin_morgeana',
-        avatar: 'EM',
+        name: userName || 'User',
+        username: '@' + (userName || 'user').toLowerCase().replace(/\s/g, '_'),
+        avatar: getInitials(userName || 'User'),
     };
 
     const menuItems = [
         {
             id: '1',
-            title: 'Invite Friends',
-            icon: 'person-add-outline',
-            color: '#4A90E2',
+            title: 'Edit Profile',
+            icon: 'create-outline',
+            color: '#FF9800',
+            onPress: () => navigation.navigate('ProfileSetup'),
         },
         {
             id: '2',
             title: 'Account info',
             icon: 'person-outline',
             color: '#4CAF50',
+            onPress: () => console.log('Account info'),
         },
         {
             id: '3',
-            title: 'Personal profile',
-            icon: 'create-outline',
-            color: '#FF9800',
+            title: 'Invite Friends',
+            icon: 'person-add-outline',
+            color: '#4A90E2',
+            onPress: () => console.log('Invite friends'),
         },
         {
             id: '4',
             title: 'Message center',
             icon: 'chatbubble-outline',
             color: '#9C27B0',
+            onPress: () => console.log('Message center'),
         },
         {
             id: '5',
             title: 'Login and security',
             icon: 'shield-checkmark-outline',
             color: '#F44336',
+            onPress: () => console.log('Login and security'),
         },
         {
             id: '6',
             title: 'Data and privacy',
             icon: 'lock-closed-outline',
             color: '#607D8B',
+            onPress: () => console.log('Data and privacy'),
         },
     ];
+
+    const handleLogout = () => {
+        Alert.alert(
+            'Logout',
+            'Are you sure you want to logout?',
+            [
+                { text: 'Cancel', style: 'cancel' },
+                {
+                    text: 'Logout',
+                    style: 'destructive',
+                    onPress: () => {
+                        logout();
+                        navigation.reset({
+                            index: 0,
+                            routes: [{ name: 'Login' }],
+                        });
+                    },
+                },
+            ]
+        );
+    };
 
     const renderMenuItem = (item: typeof menuItems[0]) => (
         <TouchableOpacity
             key={item.id}
             style={styles.menuItem}
             activeOpacity={0.7}
+            onPress={item.onPress}
         >
             <View style={styles.menuItemLeft}>
                 <View style={[styles.menuIcon, { backgroundColor: item.color + '15' }]}>
@@ -83,6 +127,7 @@ const ProfileScreen = () => {
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={styles.scrollContent}
             >
+                {/* Curved Header */}
                 <View style={styles.curvedHeader}>
                     <View style={styles.circle1} />
                     <View style={styles.circle2} />
@@ -93,11 +138,22 @@ const ProfileScreen = () => {
 
                 {/* Profile Card - Overlaps the header */}
                 <View style={styles.profileCardWrapper}>
-                    <View style={styles.avatarContainer}>
-                        <Text style={styles.avatarText}>{userData.avatar}</Text>
+                    <View style={styles.profileCard}>
+                        <View style={[styles.avatarContainer, { backgroundColor: avatarColor }]}>
+                            <Text style={styles.avatarText}>{userData.avatar}</Text>
+                        </View>
+                        <Text style={styles.userName}>{userData.name}</Text>
+                        <Text style={styles.userUsername}>{userData.username}</Text>
+
+                        {/* Edit Profile Button */}
+                        <TouchableOpacity
+                            style={styles.editButton}
+                            onPress={() => navigation.navigate('ProfileSetup')}
+                        >
+                            <Ionicons name="create-outline" size={16} color={COLORS.primary} />
+                            <Text style={styles.editButtonText}>Edit Profile</Text>
+                        </TouchableOpacity>
                     </View>
-                    <Text style={styles.userName}>{userData.name}</Text>
-                    <Text style={styles.userUsername}>{userData.username}</Text>
                 </View>
 
                 {/* Menu Section */}
@@ -107,7 +163,11 @@ const ProfileScreen = () => {
                 </View>
 
                 {/* Logout Button */}
-                <TouchableOpacity style={styles.logoutButton} activeOpacity={0.7}>
+                <TouchableOpacity
+                    style={styles.logoutButton}
+                    activeOpacity={0.7}
+                    onPress={handleLogout}
+                >
                     <Ionicons name="log-out-outline" size={20} color="#F44336" />
                     <Text style={styles.logoutText}>Log Out</Text>
                 </TouchableOpacity>
@@ -121,7 +181,7 @@ const ProfileScreen = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: COLORS.lightBg,
+        backgroundColor: COLORS.background,
     },
     scrollContent: {
         paddingBottom: 30,
@@ -181,13 +241,24 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         marginTop: -50,
         marginBottom: 15,
+    },
+    profileCard: {
+        backgroundColor: COLORS.white,
         alignItems: 'center',
+        paddingVertical: 25,
+        paddingHorizontal: 20,
+        borderRadius: 20,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.1,
+        shadowRadius: 12,
+        elevation: 5,
     },
     avatarContainer: {
         width: 90,
         height: 90,
         borderRadius: 45,
-        backgroundColor: COLORS.background,
+        backgroundColor: COLORS.primary,
         justifyContent: 'center',
         alignItems: 'center',
         marginBottom: 16,
@@ -210,8 +281,23 @@ const styles = StyleSheet.create({
     },
     userUsername: {
         fontSize: 14,
-        color: COLORS.textMuted,
+        color: '#8A9AA3',
         fontWeight: '400',
+        marginBottom: 12,
+    },
+    editButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 16,
+        paddingVertical: 8,
+        borderRadius: 20,
+        backgroundColor: COLORS.primary + '10',
+        gap: 6,
+    },
+    editButtonText: {
+        fontSize: 14,
+        fontWeight: '500',
+        color: COLORS.primary,
     },
     menuContainer: {
         paddingHorizontal: 20,
@@ -234,6 +320,11 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
         borderRadius: 12,
         marginBottom: 8,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.03,
+        shadowRadius: 4,
+        elevation: 2,
     },
     menuItemLeft: {
         flexDirection: 'row',
@@ -242,7 +333,7 @@ const styles = StyleSheet.create({
     menuIcon: {
         width: 42,
         height: 42,
-        borderRadius: 50,
+        borderRadius: 12,
         justifyContent: 'center',
         alignItems: 'center',
         marginRight: 14,
@@ -261,6 +352,11 @@ const styles = StyleSheet.create({
         paddingVertical: 14,
         backgroundColor: COLORS.white,
         borderRadius: 12,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.03,
+        shadowRadius: 4,
+        elevation: 2,
     },
     logoutText: {
         fontSize: 15,
