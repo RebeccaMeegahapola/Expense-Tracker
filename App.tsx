@@ -7,6 +7,7 @@ import OnboardingScreen from "./src/screens/OnboardingScreen";
 import EditTransactionScreen from "./src/screens/EditTransactionScreen";
 import SetupPinScreen from "./src/screens/SetupPinScreen";
 import LoginScreen from "./src/screens/LoginScreen";
+import ProfileSetupScreen from "./src/screens/ProfileSetupScreen";
 
 const Stack = createStackNavigator();
 
@@ -22,6 +23,7 @@ const App = () => {
                 <Stack.Screen name="Login" component={LoginScreen} />
                 <Stack.Screen name="MainApp" component={BottomTabNavigator} />
                 <Stack.Screen name="EditTransaction" component={EditTransactionScreen} />
+                <Stack.Screen name="ProfileSetup" component={ProfileSetupScreen} />
             </Stack.Navigator>
         </NavigationContainer>
     );
